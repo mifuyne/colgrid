@@ -2,12 +2,7 @@
 
 function Cell({ onColorChange, uid, value }) {
     return (
-        <input 
-            className="grid-cells" 
-            onChange={e => onColorChange(uid, e.target.value)}
-            type="color"
-            value={value} 
-        />
+        <button className="grid-cells"></button>
     )
 }
 
