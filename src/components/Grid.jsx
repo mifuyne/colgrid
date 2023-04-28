@@ -3,22 +3,23 @@ import Cell from './Cell'
 import '../styles/Grid.css'
 
 function Grid ({ size }) {
+
+    const cell_amount = size ** 2
+    const [colours, setColours] = useState(Array(cell_amount).fill("inherit"))
+
     // Event Handlers
     function handleColorChange(idx, value) {
         const new_colours = colours.slice()
-        new_colours[idx] = value
+        new_colours[idx] = "#3399ff"
 
         setColours(new_colours);
     }
-
-    const cell_amount = size ** 2
-    const [colours, setColours] = useState(Array(cell_amount).fill("#ffffff"))
 
     // Generate the 10x10 grid, but futureproof for variable grid size
     const rows = []
     let row = []
 
-    for (let i = 0; i < cell_amount; i++) {
+    for (let i = 0; i <= cell_amount; i++) {
         // Establishing x and y
         const x = Math.floor(i / size)
         const y = i % size
