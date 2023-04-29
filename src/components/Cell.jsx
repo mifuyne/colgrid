@@ -2,12 +2,12 @@
 
 import { memo } from 'react'
 
-const Cell = memo(function Cell({ onColorChange, uid, value }) {
+const Cell = memo(function Cell({ onClick, uid, properties }) {
     return (
         <button 
             className="grid-cells" 
-            onClick={e => onColorChange(uid, e.target.value)}
-            style={{ backgroundColor: value }}>&nbsp;</button>
+            onClick={e => onClick(uid, e.target.value, e)}
+            style={{ backgroundColor: properties.colour }}>&nbsp;</button>
     )
 })
 

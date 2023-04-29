@@ -1,19 +1,53 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Cell from './Cell'
+import Picker from './Picker'
 import '../styles/Grid.css'
 
 function Grid ({ size }) {
-
     const cell_amount = size ** 2
-    const [colours, setColours] = useState(Array(cell_amount).fill("inherit"))
+    const [colours, setColours] = useState(Array(cell_amount).fill({userFilled: false, colour: "inherit"}))
+    const [pickerMeta, setPickerMeta] = useState({pos: {x: 0, y: 0}, colour: null})
+    const [isPickerOpen, togglePicker] = useState(false)
+    
+    // References
+    const gridRef = useRef(null)
+    const pickerRef = useRef(null)
 
     // Event Handlers
-    function handleColorChange(idx, value) {
-        const new_colours = colours.slice()
-        new_colours[idx] = "#3399ff"
+    function handleClick(idx, value, evt) {
+        // change the picker's position
+        let new_meta = {...pickerMeta}
+        new_meta.pos = {
+            x: evt.clientX,
+            y: evt.clientY
+        }
+        new_meta.colour = colours[idx].colour
 
-        setColours(new_colours);
+        const new_colours = colours.slice()
+        new_colours[idx] = {
+            userFilled: true,
+            colour: "#3399ff"
+        }
+
+
+        setPickerMeta(new_meta)
+        setColours(new_colours)
     }
+
+    // -- checking where the mouse is clicking on
+    useEffect(() => {
+        window.onclick = (event) => {
+            if (!gridRef.current.contains(event.target) 
+                && (pickerRef.current === null
+                    || (pickerRef.current !== null && !pickerRef.current.contains(event.target))
+                )
+            ) {
+                togglePicker(false)
+            } else {
+                togglePicker(true)
+            }
+        }
+    }, [])
 
     // Generate the 10x10 grid, but futureproof for variable grid size
     const rows = []
@@ -35,13 +69,19 @@ function Grid ({ size }) {
             <Cell
                 uid={i}
                 key={cell_key} 
-                value={colours[i]} 
-                onColorChange={handleColorChange}
+                properties={colours[i]} 
+                onClick={handleClick}
             />
         )
     }
 
-    return <div className="grid">{rows}</div>
+    return (
+        <>
+            <div className="grid" ref={gridRef}>{rows}</div>
+            {/* {isPickerOpen && <Picker pos={pickerMeta.pos} />} */}
+            <Picker {...pickerMeta} ref={pickerRef} isActive={isPickerOpen} />
+        </>
+    )
 }
 
 export default Grid
