@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useDebouncyFn } from 'use-debouncy'
 import Cell from './Cell'
 import Picker from './Picker'
 import '../styles/Grid.css'
@@ -6,7 +7,9 @@ import '../styles/Grid.css'
 function Grid ({ size }) {
     const cell_amount = size ** 2
     const [colours, setColours] = useState(Array(cell_amount).fill({userFilled: false, colour: "inherit"}))
-    const [pickerMeta, setPickerMeta] = useState({pos: {x: 0, y: 0}, colour: null})
+    
+    // Picker States
+    const [pickerMeta, updatePickerMeta] = useState({cell: null, pos: {x: 0, y: 0}, colour: null})
     const [isPickerOpen, togglePicker] = useState(false)
     
     // References
@@ -14,27 +17,52 @@ function Grid ({ size }) {
     const pickerRef = useRef(null)
 
     // Event Handlers
-    function handleClick(idx, value, evt) {
+
+    // When Cell is clicked on
+    function handleClick(idx, evt) {
+        const new_meta = {...pickerMeta}
         // change the picker's position
-        let new_meta = {...pickerMeta}
         new_meta.pos = {
             x: evt.clientX,
             y: evt.clientY
         }
-        new_meta.colour = colours[idx].colour
+
+        // change the cell index referenced
+        new_meta.cell = idx
+
+        // change the referenced colour (to be passed into the picker component itself)
+        new_meta.colour = colours[idx].colour === "inherit" ? "#fff" : colours[idx].colour
+
+        updatePickerMeta(new_meta)
+        // setColourPicked(new_meta.colour)
+    }
+
+    // When react-colorful picker detects changes
+    const handlePickerChange = useDebouncyFn((idx, colour) => {
+        const new_meta = {...pickerMeta}
+        // update colour in pickerMeta
+        new_meta.colour = colour
 
         const new_colours = colours.slice()
         new_colours[idx] = {
             userFilled: true,
-            colour: "#3399ff"
+            colour: colour
         }
 
-
-        setPickerMeta(new_meta)
         setColours(new_colours)
-    }
+        updatePickerMeta(new_meta)
 
-    // -- checking where the mouse is clicking on
+        console.log('handlePickerChage: ', idx, colour, new_colours)
+    }, 200)
+
+    // TODO: Update the grid and fill in appropriate cells!
+    useEffect(() => {
+        if (!isPickerOpen) {
+            console.log("Grid - TODO: Update the grid and fill in appropriate cells!")
+        }
+    }, [isPickerOpen])
+
+    // -- Escaping React to check where the mouse is clicking on
     useEffect(() => {
         window.onclick = (event) => {
             if (!gridRef.current.contains(event.target) 
@@ -78,8 +106,7 @@ function Grid ({ size }) {
     return (
         <>
             <div className="grid" ref={gridRef}>{rows}</div>
-            {/* {isPickerOpen && <Picker pos={pickerMeta.pos} />} */}
-            <Picker {...pickerMeta} ref={pickerRef} isActive={isPickerOpen} />
+            <Picker {...pickerMeta} ref={pickerRef} isActive={isPickerOpen} handleChange={handlePickerChange} />
         </>
     )
 }

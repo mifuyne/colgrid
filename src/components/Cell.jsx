@@ -6,8 +6,11 @@ const Cell = memo(function Cell({ onClick, uid, properties }) {
     return (
         <button 
             className="grid-cells" 
-            onClick={e => onClick(uid, e.target.value, e)}
-            style={{ backgroundColor: properties.colour }}>&nbsp;</button>
+            onClick={e => onClick(uid, e)}
+            style={{ backgroundColor: properties.colour }}>
+            {/* &nbsp; */}
+            {uid}
+        </button>
     )
 })
 
