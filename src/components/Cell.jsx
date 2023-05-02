@@ -1,14 +1,17 @@
 // Styling in Grid.css
 
-function Cell({ onColorChange, uid, value }) {
+import { memo } from 'react'
+
+const Cell = memo(function Cell({ onClick, uid, properties }) {
     return (
-        <input 
+        <button 
             className="grid-cells" 
-            onChange={e => onColorChange(uid, e.target.value)}
-            type="color"
-            value={value} 
-        />
+            onClick={e => onClick(uid, e)}
+            style={{ backgroundColor: properties.colour }}>
+            {/* &nbsp; */}
+            {uid}
+        </button>
     )
-}
+})
 
 export default Cell

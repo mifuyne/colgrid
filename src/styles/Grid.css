@@ -14,7 +14,16 @@
     height: 9vw;
     padding: 0;
     margin: 0;
-    border: 0;
+    border: 0 solid grey;
+    border-width: 0 0 1px 1px;
+}
+
+.colour-picker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.5rem;
+    background-color: white;
 }
 
 @media (min-width: 744px) {
