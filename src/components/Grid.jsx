@@ -4,14 +4,26 @@ import Cell from './Cell'
 import Picker from './Picker'
 import '../styles/Grid.css'
 
-function Grid ({ size }) {
+function Grid({ size }) {
     const cell_amount = size ** 2
-    const [colours, setColours] = useState(Array(cell_amount).fill({userFilled: false, colour: "inherit"}))
-    
+
+    const [colours, setColours] = useState(Array.from({ length: cell_amount }, (_, i) => {
+        const xCoord = Math.floor(i / size)
+        const yCoord = i % size
+        return {
+            coord: {
+                x: xCoord,
+                y: yCoord
+            },
+            userFilled: false,
+            colour: "inherit"
+        }
+    }))
+
     // Picker States
-    const [pickerMeta, updatePickerMeta] = useState({cell: null, pos: {x: 0, y: 0}, colour: null})
+    const [pickerMeta, updatePickerMeta] = useState({ cell: null, pos: { x: 0, y: 0 }, colour: null })
     const [isPickerOpen, togglePicker] = useState(false)
-    
+
     // References
     const gridRef = useRef(null)
     const pickerRef = useRef(null)
@@ -20,7 +32,7 @@ function Grid ({ size }) {
 
     // When Cell is clicked on
     function handleClick(idx, evt) {
-        const new_meta = {...pickerMeta}
+        const new_meta = { ...pickerMeta }
         // change the picker's position
         new_meta.pos = {
             x: evt.clientX,
@@ -39,15 +51,13 @@ function Grid ({ size }) {
 
     // When react-colorful picker detects changes
     const handlePickerChange = useDebouncyFn((idx, colour) => {
-        const new_meta = {...pickerMeta}
+        const new_meta = { ...pickerMeta }
         // update colour in pickerMeta
         new_meta.colour = colour
 
         const new_colours = colours.slice()
-        new_colours[idx] = {
-            userFilled: true,
-            colour: colour
-        }
+        new_colours[idx].userFilled = true
+        new_colours[idx].colour = colour
 
         setColours(new_colours)
         updatePickerMeta(new_meta)
@@ -65,7 +75,7 @@ function Grid ({ size }) {
     // -- Escaping React to check where the mouse is clicking on
     useEffect(() => {
         window.onclick = (event) => {
-            if (!gridRef.current.contains(event.target) 
+            if (!gridRef.current.contains(event.target)
                 && (pickerRef.current === null
                     || (pickerRef.current !== null && !pickerRef.current.contains(event.target))
                 )
@@ -81,26 +91,29 @@ function Grid ({ size }) {
     const rows = []
     let row = []
 
-    for (let i = 0; i <= cell_amount; i++) {
-        // Establishing x and y
-        const x = Math.floor(i / size)
-        const y = i % size
-        const cell_key = x.toString(16) + "_" + y.toString(16)
+    for (let i = 0; i < cell_amount; i++) {
+        // Establishing x and y from the colours state array
+        const x = colours[i].coord.x
+        const y = colours[i].coord.y
 
-        // Check if this is a new row before adding more to `row`.
-        if (y === 0 && i !== 0) {
-            rows.push(<div className="grid-row" key={cell_key}>{row}</div>)
-            row = []
-        }
+        // Generating unique key based on cell's "coordinates"
+        const cell_key = x + "_" + y
 
+        // Add a cell to `row` array
         row.push(
             <Cell
                 uid={i}
-                key={cell_key} 
-                properties={colours[i]} 
+                key={cell_key}
+                properties={colours[i]}
                 onClick={handleClick}
             />
         )
+
+        // End of the row? Add it to `rows` array
+        if (y === (size - 1) && i !== 0) {
+            rows.push(<div className="grid-row" key={cell_key}>{row}</div>)
+            row = []
+        }
     }
 
     return (
