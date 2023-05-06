@@ -2,16 +2,16 @@
 
 import { memo } from 'react'
 
-const Cell = memo(function Cell({ onClick, uid, properties }) {
-    return (
+const Cell = memo(function Cell({ onClick, coord, properties }) {
+     return (
         <button 
             className="grid-cells" 
-            onClick={e => onClick(uid, e)}
+            onClick={e => onClick(coord, e)}
             style={{ backgroundColor: properties.colour }}>
             {/* &nbsp; */}
-            {uid}
+            {coord}
         </button>
-    )
+    ) 
 })
 
 export default Cell

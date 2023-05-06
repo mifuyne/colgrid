@@ -6,24 +6,29 @@ import '../styles/Grid.css'
 
 function Grid({ size }) {
     const cell_amount = size ** 2
-
-    const [colours, setColours] = useState(Array.from({ length: cell_amount }, (_, i) => {
-        const xCoord = Math.floor(i / size)
-        const yCoord = i % size
-        return {
-            coord: {
-                x: xCoord,
-                y: yCoord
-            },
-            userFilled: false,
-            colour: "inherit"
-        }
-    }))
-
+    
+    // Using map instead
+    const [colours, setColours] = useState(new Map(
+        Array.from({ length: cell_amount }, (_, idx) => {
+            const xCoord = idx % size
+            const yCoord = Math.floor(idx / size)
+            return [xCoord + "," + yCoord, {
+                userFilled: false,
+                colour: "inherit"
+            }]
+        })
+    ))
+    
     // Picker States
-    const [pickerMeta, updatePickerMeta] = useState({ cell: null, pos: { x: 0, y: 0 }, colour: null })
+    const [pickerMeta, updatePickerMeta] = useState(
+        {
+            coord: null,
+            pos: {x: 0, y: 0},
+            cellProp: null
+        }
+    )
     const [isPickerOpen, togglePicker] = useState(false)
-
+    
     // References
     const gridRef = useRef(null)
     const pickerRef = useRef(null)
@@ -31,38 +36,39 @@ function Grid({ size }) {
     // Event Handlers
 
     // When Cell is clicked on
-    function handleClick(idx, evt) {
-        const new_meta = { ...pickerMeta }
-        // change the picker's position
+    function handleClick(coord, evt) {
+        const prev_cell_props = colours.get(coord)
+        const new_meta = {...pickerMeta}
+
+        // change the picker's position based on the mouse's position relative to the page.
         new_meta.pos = {
-            x: evt.clientX,
-            y: evt.clientY
+            x: evt.pageX,
+            y: evt.pageY
         }
 
-        // change the cell index referenced
-        new_meta.cell = idx
+        // change the cell referenced
+        new_meta.coord = coord
 
-        // change the referenced colour (to be passed into the picker component itself)
-        new_meta.colour = colours[idx].colour === "inherit" ? "#fff" : colours[idx].colour
+        // change the referenced cell properties
+        new_meta.cellProp = prev_cell_props
 
         updatePickerMeta(new_meta)
-        // setColourPicked(new_meta.colour)
     }
 
     // When react-colorful picker detects changes
-    const handlePickerChange = useDebouncyFn((idx, colour) => {
-        const new_meta = { ...pickerMeta }
+    const handlePickerChange = useDebouncyFn((coord, colour) => {
+        console.log(coord, colour, pickerMeta)
+        const next_meta = { ...pickerMeta }
+
         // update colour in pickerMeta
-        new_meta.colour = colour
+        next_meta.cellProp.colour = colour
 
-        const new_colours = colours.slice()
-        new_colours[idx].userFilled = true
-        new_colours[idx].colour = colour
+        const next_colours = new Map(colours)
+        next_colours.get(coord).userFilled = true
+        next_colours.get(coord).colour = colour
 
-        setColours(new_colours)
-        updatePickerMeta(new_meta)
-
-        console.log('handlePickerChage: ', idx, colour, new_colours)
+        setColours(next_colours)
+        updatePickerMeta(next_meta)
     }, 200)
 
     // TODO: Update the grid and fill in appropriate cells!
@@ -75,7 +81,7 @@ function Grid({ size }) {
     // -- Escaping React to check where the mouse is clicking on
     useEffect(() => {
         window.onclick = (event) => {
-            if (!gridRef.current.contains(event.target)
+            if (!gridRef.current.contains(event.target) 
                 && (pickerRef.current === null
                     || (pickerRef.current !== null && !pickerRef.current.contains(event.target))
                 )
@@ -91,30 +97,25 @@ function Grid({ size }) {
     const rows = []
     let row = []
 
-    for (let i = 0; i < cell_amount; i++) {
-        // Establishing x and y from the colours state array
-        const x = colours[i].coord.x
-        const y = colours[i].coord.y
-
-        // Generating unique key based on cell's "coordinates"
-        const cell_key = x + "_" + y
-
+    colours.forEach((colourProps, coord) => {
+        const [x, y] = coord.split(",").map((n) => parseInt(n))
+        
         // Add a cell to `row` array
         row.push(
             <Cell
-                uid={i}
-                key={cell_key}
-                properties={colours[i]}
+                coord={coord}
+                key={coord}
+                properties={colourProps}
                 onClick={handleClick}
             />
         )
-
+        
         // End of the row? Add it to `rows` array
-        if (y === (size - 1) && i !== 0) {
-            rows.push(<div className="grid-row" key={cell_key}>{row}</div>)
+        if (x === (size - 1)) {
+            rows.push(<div className="grid-row" key={"row_" + y}>{row}</div>)
             row = []
         }
-    }
+    })
 
     return (
         <>
