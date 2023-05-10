@@ -23,7 +23,7 @@ function Grid({ size }) {
     const [pickerMeta, updatePickerMeta] = useState(
         {
             coord: null,
-            pos: {x: 0, y: 0},
+            mousePos: {x: 0, y: 0},
             cellProp: null
         }
     )
@@ -41,7 +41,7 @@ function Grid({ size }) {
         const new_meta = {...pickerMeta}
 
         // change the picker's position based on the mouse's position relative to the page.
-        new_meta.pos = {
+        new_meta.mousePos = {
             x: evt.pageX,
             y: evt.pageY
         }

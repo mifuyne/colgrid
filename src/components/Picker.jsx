@@ -8,11 +8,11 @@ import { HexColorPicker, HexColorInput } from 'react-colorful'
         </div>
     )
 } */
-const Picker = forwardRef( ({pos, coord, cellProp, isActive, handleChange}, ref) => {
+const Picker = forwardRef( ({mousePos, coord, cellProp, isActive, handleChange}, ref) => {
     return (
         <>
             {isActive && (
-            <div className="colour-picker" style={{ left: pos.x + "px", top: pos.y + "px" }} ref={ref}>
+            <div className="colour-picker" style={{ left: mousePos.x + "px", top: mousePos.y + "px" }} ref={ref}>
                 <HexColorPicker color={cellProp.colour} onChange={(col) => { handleChange(coord, col) }} />
                 <HexColorInput 
                     color={cellProp.colour === "inherit" ? "#fff" : cellProp.colour}
