@@ -7,6 +7,7 @@ import '../styles/Grid.css'
 function Grid({ size }) {
     const cell_amount = size ** 2
     
+    // -- Setting state variables
     // Using map instead
     const [colours, setColours] = useState(new Map(
         Array.from({ length: cell_amount }, (_, idx) => {
@@ -28,6 +29,9 @@ function Grid({ size }) {
         }
     )
     const [isPickerOpen, togglePicker] = useState(false)
+
+    // History state
+    const [history, updateHistory] = useState([null])
     
     // References
     const gridRef = useRef(null)
@@ -59,16 +63,27 @@ function Grid({ size }) {
     const handlePickerChange = useDebouncyFn((coord, colour) => {
         console.log(coord, colour, pickerMeta)
         const next_meta = { ...pickerMeta }
+        const new_history = history.slice()
 
         // update colour in pickerMeta
         next_meta.cellProp.colour = colour
 
+        // update colour Map
         const next_colours = new Map(colours)
         next_colours.get(coord).userFilled = true
         next_colours.get(coord).colour = colour
 
+        // update history
+        const last_history = new_history[new_history.length - 1]
+        // Omit changes while the picker is active (assuming user didn't save the colour)
+        if (coord !== last_history) {
+            new_history.push(coord)
+        }
+
+        // update states
         setColours(next_colours)
         updatePickerMeta(next_meta)
+        updateHistory(new_history)
     }, 200)
 
     // TODO: Update the grid and fill in appropriate cells!
