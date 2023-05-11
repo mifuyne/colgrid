@@ -24,6 +24,14 @@
     left: 0;
     padding: 0.5rem;
     background-color: white;
+    box-shadow: 10px 10px 50px;
+}
+
+.colour-picker .close {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    z-index: 1;
 }
 
 @media (min-width: 744px) {

@@ -25,7 +25,10 @@ function Grid({ size }) {
         {
             coord: null,
             mousePos: {x: 0, y: 0},
-            cellProp: null
+            cellProp: {
+                userFilled: false,
+                colour: "inherit"
+            }
         }
     )
     const [isPickerOpen, togglePicker] = useState(false)
@@ -58,29 +61,6 @@ function Grid({ size }) {
         updatePickerMeta(new_meta)
     }
 
-    // When react-colorful picker detects changes
-    const handlePickerChange = useDebouncyFn((coord, colour) => {
-        // console.log(coord, colour, pickerMeta)
-        
-        // update colour in pickerMeta
-        const next_meta = { ...pickerMeta }
-        next_meta.cellProp.colour = colour
-        
-        // update colour Map
-        const next_colours = new Map(colours)
-        next_colours.get(coord).userFilled = true
-        next_colours.get(coord).colour = colour
-        
-        // update filled colour set
-        const new_filled_set = new Set(filledCells)
-        new_filled_set.add(coord)
-
-        // update states
-        setColours(next_colours)
-        updatePickerMeta(next_meta)
-        updateFilledCells(new_filled_set)
-    }, 200)
-
     // Disble right click in Grid only
     const handleContextMenu = (coord, e) => {
         e.preventDefault()
@@ -99,18 +79,42 @@ function Grid({ size }) {
         updateFilledCells(new_filled_set)
         setColours(next_colours)
     }
-    
-    // TODO: Update the grid and fill in appropriate cells!
-    useEffect(() => {
-        if (!isPickerOpen) {
-            console.log("Grid - TODO: Update the grid and fill in appropriate cells!")
-        }
-    }, [isPickerOpen])
 
-    // -- Escaping React to check where the mouse is clicking on
+    const handlePickerClose = () => {
+        togglePicker(false)
+    }
+
+    const handlePickerConfirm = (coord, colour) => {
+        // TODO: Update the grid and fill in appropriate cells!
+        console.log('Saving picker colour!')
+        // console.log(coord, colour, pickerMeta)
+
+        // update colour in pickerMeta
+        const next_meta = { ...pickerMeta }
+        next_meta.cellProp.colour = colour
+
+        // update colour Map
+        const next_colours = new Map(colours)
+        next_colours.get(coord).userFilled = true
+        next_colours.get(coord).colour = colour
+
+        // update filled colour set
+        const new_filled_set = new Set(filledCells)
+        new_filled_set.add(coord)
+
+        // update states
+        setColours(next_colours)
+        updatePickerMeta(next_meta)
+        updateFilledCells(new_filled_set)
+
+        console.info("TODO: Update the grid and fill in appropriate cells")
+
+        handlePickerClose()
+    }
+
+    // -- Escaping React to check where the mouse is clicking on, to show or hide the Picker modal
     useEffect(() => {
         window.onclick = (event) => {
-            // console.log(event)
             if (!gridRef.current.contains(event.target) 
                 && (pickerRef.current === null
                     || (pickerRef.current !== null && !pickerRef.current.contains(event.target))
@@ -151,7 +155,14 @@ function Grid({ size }) {
     return (
         <>
             <div className="grid" ref={gridRef}>{rows}</div>
-            <Picker {...pickerMeta} ref={pickerRef} isActive={isPickerOpen} handleChange={handlePickerChange} />
+            <Picker {...pickerMeta} 
+                id="colour-picker"
+                ref={pickerRef} 
+                isActive={isPickerOpen} 
+                // handleChange={handlePickerChange} 
+                handleClose={handlePickerClose}
+                handleConfirm={handlePickerConfirm}
+            />
         </>
     )
 }
