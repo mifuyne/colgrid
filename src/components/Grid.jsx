@@ -38,10 +38,9 @@ function Grid({ size }) {
     const pickerRef = useRef(null)
 
     // Event Handlers
-
     // When Cell is clicked on
-    function handleClick(coord, evt) {
-        const prev_cell_props = colours.get(coord)
+    const handleClick = (coord, evt) => {
+        const current_cell_props = colours.get(coord)
         const new_meta = {...pickerMeta}
 
         // change the picker's position based on the mouse's position relative to the page.
@@ -54,26 +53,26 @@ function Grid({ size }) {
         new_meta.coord = coord
 
         // change the referenced cell properties
-        new_meta.cellProp = prev_cell_props
+        new_meta.cellProp = current_cell_props
 
         updatePickerMeta(new_meta)
     }
 
     // When react-colorful picker detects changes
     const handlePickerChange = useDebouncyFn((coord, colour) => {
-        console.log(coord, colour, pickerMeta)
-        const next_meta = { ...pickerMeta }
-        const new_filled_set = new Set(filledCells)
-
+        // console.log(coord, colour, pickerMeta)
+        
         // update colour in pickerMeta
+        const next_meta = { ...pickerMeta }
         next_meta.cellProp.colour = colour
-
+        
         // update colour Map
         const next_colours = new Map(colours)
         next_colours.get(coord).userFilled = true
         next_colours.get(coord).colour = colour
-
+        
         // update filled colour set
+        const new_filled_set = new Set(filledCells)
         new_filled_set.add(coord)
 
         // update states
@@ -82,6 +81,25 @@ function Grid({ size }) {
         updateFilledCells(new_filled_set)
     }, 200)
 
+    // Disble right click in Grid only
+    const handleContextMenu = (coord, e) => {
+        e.preventDefault()
+        console.info(e, coord)
+        
+        // Update filledCells to REMOVE the colour
+        const new_filled_set = new Set(filledCells)
+        new_filled_set.delete(coord)
+
+        // Update colours to change the cell back to "inherit"
+        const next_colours = new Map(colours)
+        next_colours.get(coord).userFilled = false
+        next_colours.get(coord).colour = "inherit"
+
+        // Update states
+        updateFilledCells(new_filled_set)
+        setColours(next_colours)
+    }
+    
     // TODO: Update the grid and fill in appropriate cells!
     useEffect(() => {
         if (!isPickerOpen) {
@@ -92,6 +110,7 @@ function Grid({ size }) {
     // -- Escaping React to check where the mouse is clicking on
     useEffect(() => {
         window.onclick = (event) => {
+            // console.log(event)
             if (!gridRef.current.contains(event.target) 
                 && (pickerRef.current === null
                     || (pickerRef.current !== null && !pickerRef.current.contains(event.target))
@@ -118,6 +137,7 @@ function Grid({ size }) {
                 key={coord}
                 properties={colourProps}
                 onClick={handleClick}
+                onContextMenu={handleContextMenu}
             />
         )
         
