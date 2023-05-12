@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { useDebouncyFn } from 'use-debouncy'
 import Cell from './Cell'
 import Picker from './Picker'
 import '../styles/Grid.css'
@@ -108,6 +107,7 @@ function Grid({ size }) {
         updateFilledCells(new_filled_set)
 
         console.info("TODO: Update the grid and fill in appropriate cells")
+        fillGaps(next_meta.coord, filledCells, colours, setColours)
 
         handlePickerClose()
     }
@@ -165,6 +165,62 @@ function Grid({ size }) {
             />
         </>
     )
+}
+
+function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
+    const [x, y] = current_coord.split(",").map((n) => parseInt(n))
+    const pivot = {
+        x: -1,
+        y: -1,
+        distance: NaN,
+    }
+    const gap_colours = new Map(coloursState)
+    for (let coord of coord_set) {
+
+        // Don't process the active cell
+        if (current_coord !== coord) {
+            const [it_x, it_y] = coord.split(",").map((n) => parseInt(n))
+
+            // Which axis of two coordinates share the same value
+            pivot.x = x === it_x ? it_x : -1
+            pivot.y = y === it_y ? it_y : -1
+
+            // No matches found
+            if (pivot.x < 0 && pivot.y < 0) {
+                continue
+            }
+
+            // Set the distance based on which "pivot" is active.
+            let new_dist = pivot.x < 0 ? it_x - x : it_y - y
+
+            if (Math.abs(pivot.distance) < Math.abs(new_dist)) {
+                new_dist = pivot.distance
+            }
+
+            pivot.distance = new_dist
+
+            // Fill the gaps
+            for (let i = 0; i < Math.abs(pivot.distance); i++) {
+                // -1 = up/left, 1 = down/right
+                const direction = Math.sign(pivot.distance)
+                let new_coord
+
+                if (pivot.x > -1) {
+                    new_coord = pivot.x +","+ (y + (i * direction))
+                } else {
+                    new_coord = (x + (i * direction)) +","+ pivot.y
+                }
+
+                if (gap_colours.get(new_coord).colour === "inherit") {
+                    gap_colours.get(new_coord).colour = "#def"
+                }
+
+                console.info("TODO: fill gaps based on other filled gaps, not just user-set cells.")
+            }
+        }
+    }
+
+    setColoursState(gap_colours)
 }
 
 export default Grid
