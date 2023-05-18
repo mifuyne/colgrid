@@ -169,58 +169,89 @@ function Grid({ size }) {
 
 function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
     const [x, y] = current_coord.split(",").map((n) => parseInt(n))
-    const pivot = {
-        x: -1,
-        y: -1,
-        distance: NaN,
+    const dir_vect = {
+        x: 0,
+        y: 0,
+        magnitude: 0
     }
     const gap_colours = new Map(coloursState)
+
     for (let coord of coord_set) {
 
         // Don't process the active cell
         if (current_coord !== coord) {
             const [it_x, it_y] = coord.split(",").map((n) => parseInt(n))
+            const new_colours = []
 
             // Which axis of two coordinates share the same value
-            pivot.x = x === it_x ? it_x : -1
-            pivot.y = y === it_y ? it_y : -1
+            dir_vect.x = it_x - x
+            dir_vect.y = it_y - y
+            dir_vect.magnitude = Math.sqrt(dir_vect.x ** 2 + dir_vect.y ** 2)
 
-            // No matches found
-            if (pivot.x < 0 && pivot.y < 0) {
+            // normalize dir_vect.x and .y
+            dir_vect.x /= dir_vect.magnitude
+            dir_vect.y /= dir_vect.magnitude
+            
+            // No appropriate matches found, continue to the next entry
+            if (dir_vect.x !== 0 && dir_vect.y !== 0) {
                 continue
             }
 
-            // Set the distance based on which "pivot" is active.
-            let new_dist = pivot.x < 0 ? it_x - x : it_y - y
-
-            if (Math.abs(pivot.distance) < Math.abs(new_dist)) {
-                new_dist = pivot.distance
-            }
-
-            pivot.distance = new_dist
-
+            console.log(dir_vect)
+            
             // Fill the gaps
-            for (let i = 0; i < Math.abs(pivot.distance); i++) {
-                // -1 = up/left, 1 = down/right
-                const direction = Math.sign(pivot.distance)
-                let new_coord
-
-                if (pivot.x > -1) {
-                    new_coord = pivot.x +","+ (y + (i * direction))
-                } else {
-                    new_coord = (x + (i * direction)) +","+ pivot.y
+            Array.from(gradientColour({
+                src: {
+                    x: x, 
+                    y: y,
+                    colour: gap_colours.get(current_coord).colour
+                },
+                dest: {
+                    x: it_x,
+                    y: it_y,
+                    colour: gap_colours.get(coord).colour,
                 }
-
+            }, dir_vect, new_colours, [10, 10, 10]), val => {
+                const new_coord = Object.values(val[0]).join(",")
+                const new_colour = val[1]
                 if (gap_colours.get(new_coord).colour === "inherit") {
-                    gap_colours.get(new_coord).colour = "#def"
+                    gap_colours.get(new_coord).colour = new_colour
                 }
-
-                console.info("TODO: fill gaps based on other filled gaps, not just user-set cells.")
-            }
+            })
+            
         }
     }
-
     setColoursState(gap_colours)
+}
+
+
+function gradientColour(data, dir_vect, colour_map, colour_distance) {
+    // base case
+    // NOTE: 0 is base case IF the code will NOT overwrite userfilled cells.
+    //       Otherwise, change 0 to 1
+    if (dir_vect.magnitude === 0) {
+        return
+    }
+    
+    // Whatever is in data remains static
+    const [src, dest] = Object.values(data)
+    
+    dir_vect.magnitude -= 1
+
+    const new_coord = {
+        x: src.x + (dir_vect.x * (dir_vect.magnitude)),
+        y: src.y + (dir_vect.y * (dir_vect.magnitude)),
+    }
+    
+    console.info(`[gradientColour] recursive steps @ ${dir_vect.magnitude}`, dir_vect, new_coord)
+    
+    // pass function back into itself
+    gradientColour(data, dir_vect, colour_map, colour_distance)
+    
+    // add new colours
+    colour_map.push([new_coord, "#def"])
+    
+    return colour_map
 }
 
 export default Grid
