@@ -197,39 +197,54 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
                 continue
             }
 
-            console.log(dir_vect)
+            // console.log(dir_vect)
+            // Determine the distance between colours, channel separated
+
+            // 1. Convert hex to RGB of src and dest colours
+            const src_rgb = hexToRGB(gap_colours.get(current_coord).colour)
+            const dest_rgb = hexToRGB(gap_colours.get(coord).colour)
+
+            // 2. Calculate the distance between the colours, divided by magnitude
+            const colour_distances = src_rgb.map(
+                (channel, i) => (channel - dest_rgb[i]) / dir_vect.magnitude
+            )
             
-            // Fill the gaps
-            Array.from(gradientColour({
+            // Storing results from gradientColour into gradients
+            const gradients = gradientColour({
                 src: {
                     x: x, 
                     y: y,
-                    colour: gap_colours.get(current_coord).colour
+                    colour: src_rgb
                 },
                 dest: {
                     x: it_x,
                     y: it_y,
-                    colour: gap_colours.get(coord).colour,
+                    colour: dest_rgb
                 }
-            }, dir_vect, new_colours, [10, 10, 10]), val => {
-                const new_coord = Object.values(val[0]).join(",")
-                const new_colour = val[1]
-                if (gap_colours.get(new_coord).colour === "inherit") {
-                    gap_colours.get(new_coord).colour = new_colour
-                }
-            })
-            
+            }, dir_vect, new_colours, colour_distances)
+
+            // Fill the gaps with the results from gradientColour
+            console.info(`gradients:`, gradients)
+            if (gradients) {
+                Array.from(gradients, entry => {
+                    console.log(entry)
+                    const new_coord = Object.values(entry[0]).join(",")
+                    const new_colour = entry[1]
+                    if (gap_colours.get(new_coord).userFilled === false) {
+                        gap_colours.get(new_coord).colour = new_colour
+                    }
+                })
+            }
         }
     }
     setColoursState(gap_colours)
 }
 
 
-function gradientColour(data, dir_vect, colour_map, colour_distance) {
+function gradientColour(data, dir_vect, colour_map, colour_distances) {
     // base case
-    // NOTE: 0 is base case IF the code will NOT overwrite userfilled cells.
-    //       Otherwise, change 0 to 1
-    if (dir_vect.magnitude === 0) {
+    // NOTE: 1 is base case to avoid unnecessary colour calculations
+    if (dir_vect.magnitude === 1) {
         return
     }
     
@@ -242,16 +257,61 @@ function gradientColour(data, dir_vect, colour_map, colour_distance) {
         x: src.x + (dir_vect.x * (dir_vect.magnitude)),
         y: src.y + (dir_vect.y * (dir_vect.magnitude)),
     }
+
+    // calculate new colour
+    const new_colour = src.colour.map((channel, i) => {
+        return channel - (colour_distances[i] * dir_vect.magnitude)
+    })
     
     console.info(`[gradientColour] recursive steps @ ${dir_vect.magnitude}`, dir_vect, new_coord)
+    console.log(`[gradientColour]:`, new_coord, new_colour, dir_vect.magnitude)
     
     // pass function back into itself
-    gradientColour(data, dir_vect, colour_map, colour_distance)
+    gradientColour(data, dir_vect, colour_map, colour_distances)
+
+    // convert back to hex
+    const new_col_hex = RGBToHex(new_colour)
     
     // add new colours
-    colour_map.push([new_coord, "#def"])
+    colour_map.push([new_coord, new_col_hex])
     
     return colour_map
+}
+
+function hexToRGB(colour) {
+    // Source: https://css-tricks.com/converting-color-spaces-in-javascript/
+    let channels = Array(3)
+
+    // If hex code is shorthand (e.g: #fff)
+    if (colour.length === 4) {
+        channels[0] = "0x" + colour[1] + colour[1]
+        channels[1] = "0x" + colour[2] + colour[2]
+        channels[2] = "0x" + colour[3] + colour[3]
+    } 
+    // else if hex code is full length
+    else if (colour.length === 7) {
+        channels[0] = "0x" + colour[1] + colour[2]
+        channels[1] = "0x" + colour[3] + colour[4]
+        channels[2] = "0x" + colour[5] + colour[6]
+    }
+
+    return channels.map(val => +val)
+}
+
+function RGBToHex(channels) {
+    // Source: https://css-tricks.com/converting-color-spaces-in-javascript/
+
+    let hex = "#"
+
+    Array.from(channels, val => {
+        const h = Math.round(val).toString(16)
+        if (h.length == 1) {
+            hex += "0" + h
+        }
+        hex += h
+    })
+
+    return hex
 }
 
 export default Grid
