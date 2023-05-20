@@ -176,7 +176,8 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
     }
     const gap_colours = new Map(coloursState)
 
-    for (let coord of coord_set) {
+    for (let coord of [...coord_set.values()].reverse()) {
+        console.info(`[fillGaps]: ${coord}`)
 
         // Don't process the active cell
         if (current_coord !== coord) {
@@ -230,7 +231,10 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
                     console.log(entry)
                     const new_coord = Object.values(entry[0]).join(",")
                     const new_colour = entry[1]
-                    if (gap_colours.get(new_coord).userFilled === false) {
+                    if (
+                        gap_colours.get(new_coord).userFilled === false &&
+                        gap_colours.get(new_coord).colour === "inherit"
+                    ) {
                         gap_colours.get(new_coord).colour = new_colour
                     }
                 })
