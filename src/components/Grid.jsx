@@ -169,26 +169,34 @@ function Grid({ size }) {
 
 function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
     const [x, y] = current_coord.split(",").map((n) => parseInt(n))
-    const dir_vect = {
-        x: 0,
-        y: 0,
-        magnitude: 0
-    }
     const gap_colours = new Map(coloursState)
 
-    for (let coord of [...coord_set.values()].reverse()) {
-        console.info(`[fillGaps]: ${coord}`)
+    // Limit by which cells is the closest to the src in each cardinal direction
+    const cardinals = {
+        "0,1": null,    // down
+        "1,0": null,    // right
+        "-1,0": null,   // left
+        "0,-1": null,   // up
+    }
 
+    // Check through all the user-filled cells,
+    // store the cells with the shortest distance from the current_coord
+    for (let coord of [...coord_set.values()].reverse()) {
+        
         // Don't process the active cell
         if (current_coord !== coord) {
             const [it_x, it_y] = coord.split(",").map((n) => parseInt(n))
-            const new_colours = []
-
+            const dir_vect = {
+                x: 0,
+                y: 0,
+                magnitude: 0
+            }
+            
             // Which axis of two coordinates share the same value
             dir_vect.x = it_x - x
             dir_vect.y = it_y - y
             dir_vect.magnitude = Math.sqrt(dir_vect.x ** 2 + dir_vect.y ** 2)
-
+            
             // normalize dir_vect.x and .y
             dir_vect.x /= dir_vect.magnitude
             dir_vect.y /= dir_vect.magnitude
@@ -198,37 +206,44 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
                 continue
             }
 
-            // console.log(dir_vect)
-            // Determine the distance between colours, channel separated
+            const direction_str = Object.values(dir_vect).slice(0,2).join(",")
 
+            // Add coord and direction if cardinals[dir..._str] is empty or coord is closer.
+            if (cardinals[direction_str] === null || 
+                cardinals[direction_str].direction.magnitude > dir_vect.magnitude
+            ) {
+                cardinals[direction_str] = { 
+                    coord: {x: it_x, y: it_y},
+                    direction: dir_vect,
+                }
+            }
+        }
+    }
+
+    // Start new loop, with cardinals' values
+    for (let cell of Object.values(cardinals)) {
+        if (cell) {
+            const coord_str = Object.values(cell.coord).join(",")
+            const new_colours = []
             // 1. Convert hex to RGB of src and dest colours
             const src_rgb = hexToRGB(gap_colours.get(current_coord).colour)
-            const dest_rgb = hexToRGB(gap_colours.get(coord).colour)
-
+            const dest_rgb = hexToRGB(gap_colours.get(coord_str).colour)
+        
             // 2. Calculate the distance between the colours, divided by magnitude
             const colour_distances = src_rgb.map(
-                (channel, i) => (channel - dest_rgb[i]) / dir_vect.magnitude
+                (channel, i) => (channel - dest_rgb[i]) / cell.direction.magnitude
             )
             
-            // Storing results from gradientColour into gradients
+            // 3. Storing results from gradientColour into gradients
             const gradients = gradientColour({
-                src: {
                     x: x, 
                     y: y,
                     colour: src_rgb
-                },
-                dest: {
-                    x: it_x,
-                    y: it_y,
-                    colour: dest_rgb
-                }
-            }, dir_vect, new_colours, colour_distances)
-
-            // Fill the gaps with the results from gradientColour
-            console.info(`gradients:`, gradients)
+                }, cell.direction, new_colours, colour_distances)
+        
+            // 4. Fill the gaps with the results from gradientColour
             if (gradients) {
                 Array.from(gradients, entry => {
-                    console.log(entry)
                     const new_coord = Object.values(entry[0]).join(",")
                     const new_colour = entry[1]
                     if (
@@ -245,15 +260,12 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
 }
 
 
-function gradientColour(data, dir_vect, colour_map, colour_distances) {
+function gradientColour(src, dir_vect, colour_map, colour_distances) {
     // base case
     // NOTE: 1 is base case to avoid unnecessary colour calculations
     if (dir_vect.magnitude === 1) {
         return
     }
-    
-    // Whatever is in data remains static
-    const [src, dest] = Object.values(data)
     
     dir_vect.magnitude -= 1
 
@@ -267,11 +279,8 @@ function gradientColour(data, dir_vect, colour_map, colour_distances) {
         return channel - (colour_distances[i] * dir_vect.magnitude)
     })
     
-    console.info(`[gradientColour] recursive steps @ ${dir_vect.magnitude}`, dir_vect, new_coord)
-    console.log(`[gradientColour]:`, new_coord, new_colour, dir_vect.magnitude)
-    
     // pass function back into itself
-    gradientColour(data, dir_vect, colour_map, colour_distances)
+    gradientColour(src, dir_vect, colour_map, colour_distances)
 
     // convert back to hex
     const new_col_hex = RGBToHex(new_colour)
@@ -311,8 +320,9 @@ function RGBToHex(channels) {
         const h = Math.round(val).toString(16)
         if (h.length == 1) {
             hex += "0" + h
+        } else {
+            hex += h
         }
-        hex += h
     })
 
     return hex
