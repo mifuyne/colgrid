@@ -60,7 +60,7 @@ function Grid({ size }) {
         updatePickerMeta(new_meta)
     }
 
-    // Disble right click in Grid only
+    // Custom right click in Grid only
     const handleContextMenu = (coord, e) => {
         e.preventDefault()
         console.info(e, coord)
@@ -112,6 +112,20 @@ function Grid({ size }) {
         handlePickerClose()
     }
 
+    const handleClearGrid = () => {
+        const clear_state = new Map(
+            Array.from({ length: cell_amount }, (_, idx) => {
+                const xCoord = idx % size
+                const yCoord = Math.floor(idx / size)
+                return [xCoord + "," + yCoord, {
+                    userFilled: false,
+                    colour: "inherit"
+                }]
+            })
+        )
+        setColours(clear_state)
+    }
+
     // -- Escaping React to check where the mouse is clicking on, to show or hide the Picker modal
     useEffect(() => {
         window.onclick = (event) => {
@@ -154,6 +168,9 @@ function Grid({ size }) {
 
     return (
         <>
+            <div className="toolbar" id="toolbar">
+                <button onClick={handleClearGrid}>New Grid</button>
+            </div>
             <div className="grid" ref={gridRef}>{rows}</div>
             <Picker {...pickerMeta} 
                 id="colour-picker"
