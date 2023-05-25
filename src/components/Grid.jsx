@@ -107,7 +107,7 @@ function Grid({ size }) {
         updateFilledCells(new_filled_set)
 
         console.info("TODO: Update the grid and fill in appropriate cells")
-        fillGaps(next_meta.coord, filledCells, colours, setColours)
+        fillGaps(next_meta.coord, new_filled_set, next_colours, setColours, updateFilledCells)
 
         handlePickerClose()
     }
@@ -124,6 +124,7 @@ function Grid({ size }) {
             })
         )
         setColours(clear_state)
+        updateFilledCells(new Set())
     }
 
     // -- Escaping React to check where the mouse is clicking on, to show or hide the Picker modal
@@ -184,7 +185,7 @@ function Grid({ size }) {
     )
 }
 
-function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
+function fillGaps(current_coord, coord_set, coloursState, setColoursState, updateFilledCells) {
     const [x, y] = current_coord.split(",").map((n) => parseInt(n))
     const gap_colours = new Map(coloursState)
 
@@ -260,6 +261,7 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
         
             // 4. Fill the gaps with the results from gradientColour
             if (gradients) {
+                const new_filled_set = new Set(coord_set)
                 Array.from(gradients, entry => {
                     const new_coord = Object.values(entry[0]).join(",")
                     const new_colour = entry[1]
@@ -268,8 +270,11 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState) {
                         gap_colours.get(new_coord).colour === "inherit"
                     ) {
                         gap_colours.get(new_coord).colour = new_colour
+                        new_filled_set.add(new_coord)
                     }
+                    
                 })
+                updateFilledCells(new_filled_set)
             }
         }
     }
