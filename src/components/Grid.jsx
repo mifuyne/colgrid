@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Cell from './Cell'
 import Picker from './Picker'
+import {SaveGrid, LoadGrid, ExportPalette} from './fileHandling'
 import '../styles/Grid.css'
 
 function Grid({ size }) {
@@ -171,6 +172,9 @@ function Grid({ size }) {
         <>
             <div className="toolbar" id="toolbar">
                 <button onClick={handleClearGrid}>New Grid</button>
+                <SaveGrid gridSettings={colours} />
+                <LoadGrid loadColours={setColours} loadFilled={updateFilledCells} />
+                <ExportPalette colourList={colours} />
             </div>
             <div className="grid" ref={gridRef}>{rows}</div>
             <Picker {...pickerMeta} 

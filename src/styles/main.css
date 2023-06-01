@@ -3,3 +3,7 @@ body {
     display: block;
     height: 100vh;
 }
+
+.hidden {
+    display: none;
+}
