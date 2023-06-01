@@ -108,7 +108,13 @@ function Grid({ size }) {
         updateFilledCells(new_filled_set)
 
         console.info("TODO: Update the grid and fill in appropriate cells")
-        fillGaps(next_meta.coord, new_filled_set, next_colours, setColours, updateFilledCells)
+        const filled_gaps = fillGaps(
+            next_meta.coord, 
+            new_filled_set, 
+            next_colours)
+
+        updateFilledCells(filled_gaps.filled_set)
+        setColours(filled_gaps.gap_colours)
 
         handlePickerClose()
     }
@@ -181,7 +187,6 @@ function Grid({ size }) {
                 id="colour-picker"
                 ref={pickerRef} 
                 isActive={isPickerOpen} 
-                // handleChange={handlePickerChange} 
                 handleClose={handlePickerClose}
                 handleConfirm={handlePickerConfirm}
             />
@@ -189,9 +194,10 @@ function Grid({ size }) {
     )
 }
 
-function fillGaps(current_coord, coord_set, coloursState, setColoursState, updateFilledCells) {
+function fillGaps(current_coord, coord_set, coloursState) {
     const [x, y] = current_coord.split(",").map((n) => parseInt(n))
     const gap_colours = new Map(coloursState)
+    const filled_set = new Set(coord_set)
 
     // Limit by which cells is the closest to the src in each cardinal direction
     const cardinals = {
@@ -265,7 +271,6 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState, updat
         
             // 4. Fill the gaps with the results from gradientColour
             if (gradients) {
-                const new_filled_set = new Set(coord_set)
                 Array.from(gradients, entry => {
                     const new_coord = Object.values(entry[0]).join(",")
                     const new_colour = entry[1]
@@ -274,15 +279,14 @@ function fillGaps(current_coord, coord_set, coloursState, setColoursState, updat
                         gap_colours.get(new_coord).colour === "inherit"
                     ) {
                         gap_colours.get(new_coord).colour = new_colour
-                        new_filled_set.add(new_coord)
+                        filled_set.add(new_coord)
                     }
                     
                 })
-                updateFilledCells(new_filled_set)
             }
         }
     }
-    setColoursState(gap_colours)
+    return {filled_set, gap_colours}
 }
 
 
