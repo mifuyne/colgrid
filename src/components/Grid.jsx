@@ -6,7 +6,11 @@ import '../styles/Grid.css'
 
 function Grid({ size }) {
     const cell_amount = size ** 2
-    
+    const app_metadata = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+    }
+
     // -- Setting state variables
     // Using map instead
     const [colours, setColours] = useState(new Map(
@@ -184,6 +188,7 @@ function Grid({ size }) {
             </div>
             <div className="grid" ref={gridRef}>{rows}</div>
             <Picker {...pickerMeta} 
+                appData={app_metadata}
                 id="colour-picker"
                 ref={pickerRef} 
                 isActive={isPickerOpen} 
