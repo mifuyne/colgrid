@@ -1,19 +1,13 @@
 .grid {
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    border: 2px solid grey
-}
-.grid-row {
-    padding: 0;
-    margin: 0;
-    font-size: 0;
+    display: grid;
+    border: 2px solid grey;
+    aspect-ratio: 1/1;
 }
 .grid-cells {
-    width: 9vw;
-    height: 9vw;
     padding: 0;
     margin: 0;
+    aspect-ratio: 1/1;
     border: 0 solid grey;
     border-width: 0 0 1px 1px;
 }
@@ -34,16 +28,18 @@
     z-index: 1;
 }
 
-@media (min-width: 744px) {
+/* @media screen and (min-width: 100vh) { */
+/* @media screen and ((min-aspect-ratio: 1/1) or (aspect-ratio: 1/1)) { */
+@media screen and (aspect-ratio >= 1.3) {
     .grid {
-        width: 720px;
-        height: 720px;
+        width: 100%;
+        height: 90vh;
     }
-    .grid-row {
-        height: 10%;
-    }
-    .grid-cells {
-        width: 10%;
-        height: 100%;
+}
+
+/* @media screen and (max-width: 101vh) { */
+@media screen and (aspect-ratio < 1.3) {
+    .grid {
+        width: 75vw;
     }
 }

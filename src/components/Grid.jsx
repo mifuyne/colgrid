@@ -5,16 +5,18 @@ import {SaveGrid, LoadGrid, ExportPalette} from './fileHandling'
 import '../styles/Grid.css'
 
 function Grid({ size }) {
-    const cell_amount = size ** 2
     const app_metadata = {
         width: window.innerWidth,
         height: window.innerHeight,
     }
-
+    
     // -- Setting state variables
+    // Amount of cells in a grid is the size squared.
+    const [cellAmount, updateCellAmt] = useState(size ** 2)
+
     // Using map instead
     const [colours, setColours] = useState(new Map(
-        Array.from({ length: cell_amount }, (_, idx) => {
+        Array.from({ length: cellAmount }, (_, idx) => {
             const xCoord = idx % size
             const yCoord = Math.floor(idx / size)
             return [xCoord + "," + yCoord, {
@@ -125,7 +127,7 @@ function Grid({ size }) {
 
     const handleClearGrid = () => {
         const clear_state = new Map(
-            Array.from({ length: cell_amount }, (_, idx) => {
+            Array.from({ length: cellAmount }, (_, idx) => {
                 const xCoord = idx % size
                 const yCoord = Math.floor(idx / size)
                 return [xCoord + "," + yCoord, {
@@ -151,17 +153,21 @@ function Grid({ size }) {
                 togglePicker(true)
             }
         }
+
+        window.onresize = () => {
+            togglePicker(false)
+        }
     }, [])
 
     // Generate the 10x10 grid, but futureproof for variable grid size
     const rows = []
-    let row = []
+    // let row = []
 
     colours.forEach((colourProps, coord) => {
         const [x, y] = coord.split(",").map((n) => parseInt(n))
         
         // Add a cell to `row` array
-        row.push(
+        rows.push(
             <Cell
                 coord={coord}
                 key={coord}
@@ -170,23 +176,17 @@ function Grid({ size }) {
                 onContextMenu={handleContextMenu}
             />
         )
-        
-        // End of the row? Add it to `rows` array
-        if (x === (size - 1)) {
-            rows.push(<div className="grid-row" key={"row_" + y}>{row}</div>)
-            row = []
-        }
     })
 
     return (
-        <>
+        <div className="work-area">
             <div className="toolbar" id="toolbar">
                 <button onClick={handleClearGrid}>New Grid</button>
                 <SaveGrid gridSettings={colours} />
                 <LoadGrid loadColours={setColours} loadFilled={updateFilledCells} />
                 <ExportPalette colourList={colours} />
             </div>
-            <div className="grid" ref={gridRef}>{rows}</div>
+            <div className="grid" ref={gridRef} style={{gridTemplateColumns: `repeat(${size}, 1fr)`}}>{rows}</div>
             <Picker {...pickerMeta} 
                 appData={app_metadata}
                 id="colour-picker"
@@ -195,7 +195,7 @@ function Grid({ size }) {
                 handleClose={handlePickerClose}
                 handleConfirm={handlePickerConfirm}
             />
-        </>
+        </div>
     )
 }
 
