@@ -6,6 +6,6 @@ import 'bulma/css/bulma.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <App size={10} />
   </React.StrictMode>,
 )
