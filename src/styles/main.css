@@ -6,8 +6,7 @@ html {
 #root {
     width: 100vw;
     height: 100vh;
-    /* padding: 1em; */
-    /* margin: 0 auto; */
+    margin-bottom: 0 !important;
     display: flex;
     flex-direction: row;
 }
@@ -19,6 +18,20 @@ html {
 .main-menu {
     min-width: 25vw;
     padding: 1rem;
+}
+
+.main-menu menu {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin-bottom: 0;
+    gap: 1em;
+}
+
+.work-area {
+    padding: 2rem;
+    margin: 0;
 }
 
 /* @media screen and (max-width: 101vh) { */

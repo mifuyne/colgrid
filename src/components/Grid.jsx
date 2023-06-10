@@ -147,7 +147,7 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
   })
 
   return (
-    <div className="work-area">
+    <>
       <div className="grid" ref={gridRef} style={{gridTemplateColumns: `repeat(${size}, 1fr)`}}>{rows}</div>
       <Picker {...pickerMeta} 
         appData={app_metadata}
@@ -157,7 +157,7 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
         handleClose={handlePickerClose}
         handleConfirm={handlePickerConfirm}
       />
-    </div>
+    </>
   )
 }
 
