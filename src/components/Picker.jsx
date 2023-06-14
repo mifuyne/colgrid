@@ -56,10 +56,10 @@ const Picker = forwardRef( ({mousePos, coord, cellProp, appData, id, isActive, h
             {isActive && (
             <div className="colour-picker" id={id} style={pickerStyle} ref={ref}>
                 <button type="button" className="delete close" onClick={handleClose}></button>
-                <HexColorPicker color={colourSync} onChange={(col) => { handleChange(col) }} />
+                <HexColorPicker color={colourSync} onChange={handleChange} />
                 <HexColorInput 
                     color={colourSync}
-                    onChange={(col) => { handleChange(col) }}
+                    onChange={handleChange}
                     className="input is-small"
                 />
                     <button type="button" className="button is-small" onClick={() => { handleConfirm(coord, colourSync) }}>Save</button>

@@ -12,17 +12,10 @@ function SaveGrid({ gridSettings }) {
         blobURL: window.URL.createObjectURL(fobject),
     }
 
-    // Faking the button feature, largely for consistency when styling.
-    const handleClick = () => {
-        file_container.current.click()
-    }
-
     return (
         <>
-            <button onClick={handleClick}>Save Grid</button>
             <a 
                 ref={file_container}
-                className="hidden"
                 href={saveObject.blobURL}
                 download={saveObject.name}
                 id="saveGrid"
@@ -34,17 +27,22 @@ function SaveGrid({ gridSettings }) {
 function LoadGrid({ loadColours, loadFilled }) {
     // Load JSON of the grid
     const file_loader = useRef(null)
-    const [file_name, setFileName] = useState(null)
+    // const [file_name, setFileName] = useState(null)
     const reader = new FileReader()
+    const [isLoaderOpen, toggleLoader] = useState(false)
 
-    // Faking the button feature, largely for consistency when styling.
-    const handleClick = () => {
-        file_loader.current.click()
+    const handleLoaderClick = () => {
+    // console.log(`BG Picker should open`)
+        toggleLoader(true)
+    }
+
+    const handleLoaderClose = () => {
+        toggleLoader(false)
     }
     
     const handleLoad = () => {
         reader.readAsText(file_loader.current.files[0])
-        setFileName(file_loader.current.files[0].name)
+        handleLoaderClose()
     }
 
     useEffect(() => {
@@ -68,16 +66,28 @@ function LoadGrid({ loadColours, loadFilled }) {
     
     return (
         <>
-            <button onClick={handleClick}>Load Grid</button>
-            <input 
-                accept="application/json"
-                className="hidden" 
-                id="loadGrid" 
-                ref={file_loader} 
-                type="file" 
-                onChange={handleLoad}
-            ></input>
-            <span id="filename">{file_name}</span>
+            <a onClick={handleLoaderClick}>Load Grid</a>
+            <div className={"modal " + (isLoaderOpen ? "is-active": "")}>
+            <div className="modal-background" onClick={handleLoaderClose}></div>
+            <div className="modal-card">
+                <header className="modal-card-head">
+                <h2>Select A Grid Save (*.json)</h2>
+                </header>
+                <section className="modal-card-body">
+                    <input 
+                        accept="application/json"
+                        id="loadGrid" 
+                        ref={file_loader} 
+                        type="file" 
+                    ></input>
+                </section>
+                <footer className="modal-card-foot">
+                <button className="button is-success" onClick={handleLoad}>Load File</button>
+                <button className="button" onClick={handleLoaderClose}>Cancel</button>
+                </footer>
+            </div>
+            <button className="modal-close is-large" aria-label='close' onClick={handleLoaderClose}></button>
+            </div>
         </>
     )
 }
@@ -107,18 +117,11 @@ function ExportPalette({ colourList }) {
         name: fname,
         blobURL: window.URL.createObjectURL(fobject),
     }
-    
-    // Faking the button feature, largely for consistency when styling.
-    const handleClick = () => {
-        palette_container.current.click()
-    }
 
     return (
         <>
-            <button onClick={handleClick}>Export Palette</button>
             <a 
                 ref={palette_container}
-                className="hidden"
                 href={saveObject.blobURL}
                 download={saveObject.name}
                 id="saveHex"

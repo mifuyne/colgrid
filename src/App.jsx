@@ -44,13 +44,19 @@ function App({ size }) {
       <nav className="main-menu">
         <h1>Smear</h1>
         <p>A Colour Mixer Webapp!</p>
-        <menu className="toolbar" id="toolbar">
-            <li><button onClick={handleClearGrid}>New Grid</button></li>
-            <li><SaveGrid gridSettings={colours} /></li>
-            <li><LoadGrid loadColours={setColours} loadFilled={updateFilledCells} /></li>
-            <li><ExportPalette colourList={colours} /></li>
-            <li><ChangeBackground updater={updateBackground} /></li>
-        </menu>
+        <aside className="menu">
+          <p className="menu-label">File</p>
+          <menu className="menu-list" id="toolbar">
+              <li><a onClick={handleClearGrid}>New Grid</a></li>
+              <li><SaveGrid gridSettings={colours} /></li>
+              <li><LoadGrid loadColours={setColours} loadFilled={updateFilledCells} /></li>
+              <li><ExportPalette colourList={colours} /></li>
+          </menu>
+          <p className="menu-label">Settings</p>
+          <menu className="menu-list" id="settings-bar">
+              <li><ChangeBackground updater={updateBackground} /></li>
+          </menu>
+        </aside>
       </nav>
       <div className="work-area" style={{backgroundColor: background_colour}}>
         <Grid size={size}
