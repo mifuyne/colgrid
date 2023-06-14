@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react'
+import { forwardRef, useState, useRef, useEffect, useImperativeHandle } from 'react'
 import Cell from './Cell'
 import Picker from './Picker'
 import {SaveGrid, LoadGrid, ExportPalette} from './fileHandling'
 import '../styles/Grid.css'
 
-function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
+const Grid = forwardRef( ({ size, colours, setColours, filledCells, updateFilledCells}, ref) => {
+
   const app_metadata = {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -30,6 +31,26 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
   const pickerRef = useRef(null)
 
   // Event Handlers
+  // Clear the Grid (New Grid)
+  useImperativeHandle(ref, () => {
+    return {
+      handleClearGrid() {
+        const clear_state = new Map(
+          Array.from({ length: size ** 2 }, (_, idx) => {
+            const xCoord = idx % size
+            const yCoord = Math.floor(idx / size)
+            return [xCoord + "," + yCoord, {
+              userFilled: false,
+              colour: "inherit"
+            }]
+          })
+        )
+        setColours(clear_state)
+        updateFilledCells(new Set())
+      }
+    }
+  }, [])
+  
   // When Cell is clicked on
   const handleClick = (coord, evt) => {
     const current_cell_props = colours.get(coord)
@@ -74,8 +95,6 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
   }
 
   const handlePickerConfirm = (coord, colour) => {
-    // TODO: Update the grid and fill in appropriate cells!
-    console.log('Saving picker colour!')
     // console.log(coord, colour, pickerMeta)
 
     // update colour in pickerMeta
@@ -96,7 +115,6 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
     updatePickerMeta(next_meta)
     updateFilledCells(new_filled_set)
 
-    console.info("TODO: Update the grid and fill in appropriate cells")
     const filled_gaps = fillGaps(
       next_meta.coord, 
       new_filled_set, 
@@ -159,7 +177,7 @@ function Grid({ size, colours, setColours, filledCells, updateFilledCells }) {
       />
     </>
   )
-}
+})
 
 function fillGaps(current_coord, coord_set, coloursState) {
   const [x, y] = current_coord.split(",").map((n) => parseInt(n))
@@ -324,5 +342,7 @@ function RGBToHex(channels) {
 
   return hex
 }
+
+Grid.displayName = 'Grid'
 
 export default Grid

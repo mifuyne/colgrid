@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useRef} from 'react'
 import Grid from './components/Grid'
 import ChangeBackground from './components/ChangeBackground'
 import {SaveGrid, LoadGrid, ExportPalette} from './components/fileHandling'
@@ -24,19 +24,11 @@ function App({ size }) {
   // Filled cells Set
   const [filledCells, updateFilledCells] = useState(new Set())
 
+  // Reference to Grid component.
+  const gridRef = useRef()
+
   const handleClearGrid = () => {
-    const clear_state = new Map(
-      Array.from({ length: cellAmount }, (_, idx) => {
-        const xCoord = idx % size
-        const yCoord = Math.floor(idx / size)
-        return [xCoord + "," + yCoord, {
-          userFilled: false,
-          colour: "inherit"
-        }]
-      })
-    )
-    setColours(clear_state)
-    updateFilledCells(new Set())
+    gridRef.current.handleClearGrid()
   }
 
   return (
@@ -64,6 +56,7 @@ function App({ size }) {
           setColours={setColours} 
           filledCells={filledCells} 
           updateFilledCells={updateFilledCells}
+          ref={gridRef}
         />
       </div>
     </>
