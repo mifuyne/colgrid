@@ -5,8 +5,8 @@ import {SaveGrid, LoadGrid, ExportPalette} from './components/fileHandling'
 
 function App({ size }) {
   // States
+  const [background_colour, updateBackground] = useState("#eeeeee")
   // Amount of cells in a grid is the size squared.
-  const [bgColour, updateBackground] = useState('#eee')
   const [cellAmount, updateCellAmt] = useState(size ** 2)
 
   // Using map instead
@@ -52,7 +52,7 @@ function App({ size }) {
             <li><ChangeBackground updater={updateBackground} /></li>
         </menu>
       </nav>
-      <div className="work-area" style={{backgroundColor: bgColour}}>
+      <div className="work-area" style={{backgroundColor: background_colour}}>
         <Grid size={size}
           colours={colours} 
           setColours={setColours} 
