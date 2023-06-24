@@ -33,24 +33,30 @@ function App({ size }) {
 
   return (
     <>
-      <nav className="main-menu">
-        <h1>Smear</h1>
-        <p>A Colour Mixer Webapp!</p>
-        <aside className="menu">
-          <p className="menu-label">File</p>
-          <menu className="menu-list" id="toolbar">
-              <li><a onClick={handleClearGrid}>New Grid</a></li>
-              <li><SaveGrid gridSettings={colours} /></li>
-              <li><LoadGrid loadColours={setColours} loadFilled={updateFilledCells} /></li>
-              <li><ExportPalette colourList={colours} /></li>
-          </menu>
-          <p className="menu-label">Settings</p>
-          <menu className="menu-list" id="settings-bar">
-              <li><ChangeBackground updater={updateBackground} /></li>
-          </menu>
-        </aside>
-      </nav>
       <div className="work-area" style={{backgroundColor: background_colour}}>
+        <header id="app-header">
+          <h1>Smear</h1>
+          <input type="checkbox" id="main-menu-ctrl" className="hidden" aria-hidden />
+          <label htmlFor="main-menu-ctrl">
+            <a role="button" className="navbar-burger">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          </label>
+          <nav id="main-menu" className='panel'>
+              <aside>
+                {/* <p className="menu-label">File</p> */}
+                <menu id="toolbar">
+                    <li><a className="menu-new" onClick={handleClearGrid}>New Grid</a></li>
+                    <li><SaveGrid classes="menu-save" gridSettings={colours} /></li>
+                    <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} /></li>
+                    <li><ExportPalette classes="menu-export" colourList={colours} /></li>
+                    <li><ChangeBackground classes="menu-changeBg" updater={updateBackground} /></li>
+                </menu>
+              </aside>
+            </nav>
+        </header>
         <Grid size={size}
           colours={colours} 
           setColours={setColours} 

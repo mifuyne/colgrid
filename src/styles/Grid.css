@@ -1,14 +1,14 @@
 .grid {
-    margin: 0 auto;
+    margin: 2rem auto;
     display: grid;
-    border: 2px solid grey;
+    border: 2px solid #888;
     aspect-ratio: 1/1;
 }
 .grid-cells {
     padding: 0;
     margin: 0;
     aspect-ratio: 1/1;
-    border: 0 solid grey;
+    border: 0 solid #888;
     border-width: 0 0 1px 1px;
 }
 
@@ -28,18 +28,21 @@
     z-index: 1;
 }
 
-/* @media screen and (min-width: 100vh) { */
-/* @media screen and ((min-aspect-ratio: 1/1) or (aspect-ratio: 1/1)) { */
 @media screen and (aspect-ratio >= 1.3) {
     .grid {
-        width: 100%;
+        width: 90vh;
         height: 90vh;
     }
 }
 
-/* @media screen and (max-width: 101vh) { */
 @media screen and (aspect-ratio < 1.3) {
     .grid {
         width: 75vw;
+    }
+}
+
+@media screen and (aspect-ratio < 1) {
+    .grid {
+        margin: auto;
     }
 }

@@ -1,6 +1,6 @@
 import {useState, useRef, useEffect} from 'react'
 
-function SaveGrid({ gridSettings }) {
+function SaveGrid({ gridSettings, classes }) {
     // Save JSON of the grid
     const file_container = useRef(null)
     const fname = Date.now() + "-smeargrid.json"
@@ -15,6 +15,7 @@ function SaveGrid({ gridSettings }) {
     return (
         <>
             <a 
+                className={classes}
                 ref={file_container}
                 href={saveObject.blobURL}
                 download={saveObject.name}
@@ -24,7 +25,7 @@ function SaveGrid({ gridSettings }) {
     )
 }
 
-function LoadGrid({ loadColours, loadFilled }) {
+function LoadGrid({ loadColours, loadFilled, classes }) {
     // Load JSON of the grid
     const file_loader = useRef(null)
     // const [file_name, setFileName] = useState(null)
@@ -66,7 +67,7 @@ function LoadGrid({ loadColours, loadFilled }) {
     
     return (
         <>
-            <a onClick={handleLoaderClick}>Load Grid</a>
+            <a onClick={handleLoaderClick} className={classes}>Load Grid</a>
             <div className={"modal " + (isLoaderOpen ? "is-active": "")}>
             <div className="modal-background" onClick={handleLoaderClose}></div>
             <div className="modal-card">
@@ -92,7 +93,7 @@ function LoadGrid({ loadColours, loadFilled }) {
     )
 }
 
-function ExportPalette({ colourList }) {
+function ExportPalette({ colourList, classes }) {
     // Export all the colours as a .hex file
     const palette_container = useRef(null)
     const fname = Date.now() + "-smeargrid.hex"
@@ -121,6 +122,7 @@ function ExportPalette({ colourList }) {
     return (
         <>
             <a 
+                className={classes}
                 ref={palette_container}
                 href={saveObject.blobURL}
                 download={saveObject.name}

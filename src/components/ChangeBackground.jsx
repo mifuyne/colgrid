@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDebouncyFn } from 'use-debouncy'
 import { HexColorPicker, HexColorInput } from 'react-colorful'
 
-function ChangeBackground({updater}) {
+function ChangeBackground({updater, classes}) {
   const [isBgPickerOpen, toggleBgPicker] = useState(false)
   const [colour_selected, updateSelectedColour] = useState("#eeeeee")
 
@@ -27,6 +27,7 @@ function ChangeBackground({updater}) {
   return (
     <>
       <a 
+        className={classes}
         name="bg-colour" 
         id="bg-colour" 
         onClick={handleBgPickerClick}
