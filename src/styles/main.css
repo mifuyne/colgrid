@@ -44,26 +44,26 @@ html {
     margin: 0;
 }
 
-#main-menu menu li {
+#main-menu menu > li {
     cursor: pointer;
     padding: 0.5rem 1rem;
 }
-#main-menu menu li:first-child {
+#main-menu menu > li:first-child {
     padding-top: 1rem;
 }
-#main-menu menu li:last-child {
+#main-menu menu > li:last-child {
     padding-bottom: 1rem;
 }
-#main-menu menu li:hover {
+#main-menu menu > li:hover {
     background-color: #f5f5f5;
     color: #363636;
 }
-#main-menu menu li > a {
+#main-menu menu > li > a {
     display: flex;
     align-items: center;
     color: #4a4a4a;
 }
-#main-menu menu li > a::before {
+#main-menu menu > li > a::before {
     margin-right: 1rem;
 }
 

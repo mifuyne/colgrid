@@ -2,6 +2,8 @@ import {useState, useRef} from 'react'
 import Grid from './components/Grid'
 import ChangeBackground from './components/ChangeBackground'
 import {SaveGrid, LoadGrid, ExportPalette} from './components/fileHandling'
+import Popup from './components/Popup'
+import data from './components/App/data.json'
 
 function App({ size }) {
   // States
@@ -53,6 +55,8 @@ function App({ size }) {
                     <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} /></li>
                     <li><ExportPalette classes="menu-export" colourList={colours} /></li>
                     <li><ChangeBackground classes="menu-changeBg" updater={updateBackground} /></li>
+                    <li><Popup name="About" props={data.about} /></li>
+                    <li><Popup name="Help" props={data.help} /></li>
                 </menu>
               </aside>
             </nav>
