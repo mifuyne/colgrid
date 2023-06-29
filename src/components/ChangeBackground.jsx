@@ -39,9 +39,9 @@ function ChangeBackground({updater, classes}) {
             <h2>Select A Background Colour</h2>
           </header>
           <section className="modal-card-body columns is-centered">
-            <div className="colour-pickers">
+            <div className="bg-colour-picker is-two-fifths column">
               <HexColorPicker color={colour_selected} onChange={handleOnChange} />
-              <HexColorInput color={colour_selected} onChange={handleOnChange} />
+              <HexColorInput color={colour_selected} onChange={handleOnChange} className="input is-small my-2" />
             </div>
           </section>
           <footer className="modal-card-foot">
