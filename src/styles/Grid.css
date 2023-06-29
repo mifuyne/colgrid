@@ -16,16 +16,21 @@
     position: absolute;
     top: 0;
     left: 0;
+    width: 250px;
     border: 1px solid #ccc;
     border-radius: 1em;
     box-shadow: 0 0.5em .75em -0.5em;
+    overflow: hidden;
 }
 
-.colour-picker .close {
+.colour-picker .pointer {
+    content: ' ';
+    width: 20px;
+    aspect-ratio: 1;
+    display: block;
+    background: #ccc;
     position: absolute;
-    right: -10px;
-    top: -10px;
-    z-index: 1;
+    transform: rotate(45deg);
 }
 
 @media screen and (aspect-ratio >= 1.3) {
