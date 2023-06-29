@@ -48,6 +48,10 @@ html {
     cursor: pointer;
     padding: 0.5rem 1rem;
 }
+
+#main-menu menu > li > div {
+    cursor: auto;
+}
 #main-menu menu > li:first-child {
     padding-top: 1rem;
 }
@@ -65,6 +69,10 @@ html {
 }
 #main-menu menu > li > a::before {
     margin-right: 1rem;
+}
+
+#main-menu menu > li > hr {
+    margin: auto;
 }
 
 /* Menu Icons */
@@ -86,6 +94,14 @@ html {
 
 .menu-changeBg::before {
     content: url('./svg/changeBg.svg')
+}
+
+.menu-about::before {
+    content: url('./svg/about.svg')
+}
+
+.menu-help::before {
+    content: url('./svg/help.svg')
 }
 
 #main-menu-ctrl:checked ~ #main-menu {
@@ -115,6 +131,11 @@ html {
     min-height: 100vh;
     /* padding: 2rem; */
     margin: 0;
+}
+
+/* react-colorful adjustments */
+#root .react-colorful {
+    width: 100%
 }
 
 /* @media screen and (max-width: 101vh) { */

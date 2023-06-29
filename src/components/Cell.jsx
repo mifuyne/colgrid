@@ -9,8 +9,7 @@ const Cell = memo(function Cell({ onContextMenu, onClick, coord, properties }) {
             onClick={e => onClick(coord, e)}
              onContextMenu={e => onContextMenu(coord, e)}
             style={{ backgroundColor: properties.colour }}>
-            {/* &nbsp; */}
-            {coord}
+            &nbsp;
         </button>
     ) 
 })

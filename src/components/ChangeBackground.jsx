@@ -31,16 +31,18 @@ function ChangeBackground({updater, classes}) {
         name="bg-colour" 
         id="bg-colour" 
         onClick={handleBgPickerClick}
-      >Change Background Colour</a>
+      >Background Colour</a>
       <div className={"modal " + (isBgPickerOpen ? "is-active": "")}>
         <div className="modal-background" onClick={handleBgPickerClose}></div>
         <div className="modal-card">
           <header className="modal-card-head">
             <h2>Select A Background Colour</h2>
           </header>
-          <section className="modal-card-body">
-            <HexColorPicker color={colour_selected} onChange={handleOnChange} />
-            <HexColorInput color={colour_selected} onChange={handleOnChange} />
+          <section className="modal-card-body columns is-centered">
+            <div className="colour-pickers">
+              <HexColorPicker color={colour_selected} onChange={handleOnChange} />
+              <HexColorInput color={colour_selected} onChange={handleOnChange} />
+            </div>
           </section>
           <footer className="modal-card-foot">
             <button className="button is-success" onClick={() => handleSave(colour_selected)}>Save Changes</button>

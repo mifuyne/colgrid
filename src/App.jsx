@@ -38,7 +38,7 @@ function App({ size }) {
     <>
       <div className="work-area" style={{backgroundColor: background_colour}}>
         <header id="app-header">
-          <h1>Smear</h1>
+          <h1>Colgrid</h1>
           <input type="checkbox" id="main-menu-ctrl" className="hidden" aria-hidden />
           <label htmlFor="main-menu-ctrl">
             <a role="button" className="navbar-burger">
@@ -56,6 +56,9 @@ function App({ size }) {
                     <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} loadBgColour={updateBackground} /></li>
                     <li><ExportPalette classes="menu-export" colourList={colours} /></li>
                     <li><ChangeBackground classes="menu-changeBg" updater={updateBackground} /></li>
+                    <li>
+                      <hr />
+                    </li>
                     <li><Popup name="About" props={data.about} /></li>
                     <li><Popup name="Help" props={data.help} /></li>
                 </menu>

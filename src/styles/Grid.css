@@ -16,9 +16,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    padding: 0.5rem;
-    background-color: white;
-    box-shadow: 10px 10px 50px;
+    border: 1px solid #ccc;
+    border-radius: 1em;
+    box-shadow: 0 0.5em .75em -0.5em;
 }
 
 .colour-picker .close {
