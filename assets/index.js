@@ -82,7 +82,11 @@ All icons sourced from [SVG Repo](https://www.svgrepo.com/). The icons are a par
 ### Repositories
 - [Codeberg](https://codeberg.org/mifuyne/colgrid)
 - [Gitlab](https://gitlab.com/mifuyne/colgrid)
-- [Github](https://github.com/mifuyne/colgrid)`},xm={name:"Help",header:"## Help",content:`1. Click on a cell.
+- [Github](https://github.com/mifuyne/colgrid)
+
+### License
+
+<a href='https://www.gnu.org/licenses/gpl-3.0.en.html' target='_blank'>GPL v3</a>`},xm={name:"Help",header:"## Help",content:`1. Click on a cell.
 2. Click on another cell across from the first
 3. Watch the magic happen! 🎉
 
