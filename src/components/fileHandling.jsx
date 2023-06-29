@@ -1,11 +1,14 @@
 import {useState, useRef, useEffect} from 'react'
 
-function SaveGrid({ gridSettings, classes }) {
+function SaveGrid({ gridSettings, appSettings, classes }) {
     // Save JSON of the grid
     const file_container = useRef(null)
     const fname = Date.now() + "-smeargrid.json"
-    const content = gridSettings
-    const fobject = new Blob([JSON.stringify(content, replacer)], {type: "application/json"})
+    const content = {
+        grid: gridSettings,
+        app_settings: appSettings
+    }
+    const fobject = new Blob([JSON.stringify(content, replacer, 2)], {type: "application/json"})
 
     const saveObject = {
         name: fname,
@@ -25,7 +28,7 @@ function SaveGrid({ gridSettings, classes }) {
     )
 }
 
-function LoadGrid({ loadColours, loadFilled, classes }) {
+function LoadGrid({ loadColours, loadFilled, loadBgColour, classes }) {
     // Load JSON of the grid
     const file_loader = useRef(null)
     // const [file_name, setFileName] = useState(null)
@@ -50,9 +53,11 @@ function LoadGrid({ loadColours, loadFilled, classes }) {
         reader.addEventListener("load", () => {
             const loaded = JSON.parse(reader.result, reviver)
             const filled = new Set()
-            loadColours(loaded)
+            console.log(loaded)
+            loadColours(loaded.grid)
+            loadBgColour(loaded.app_settings.bg_col)
 
-            Array.from(loaded.entries(), (val) => {
+            Array.from(loaded.grid.entries(), (val) => {
                 const [coord, data] = val
                 console.log(coord, data.colour)
                 if (data.colour !== "inherit") {

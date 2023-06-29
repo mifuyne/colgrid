@@ -29,7 +29,8 @@ function App({ size }) {
   // Reference to Grid component.
   const gridRef = useRef()
 
-  const handleClearGrid = () => {
+  const handleNewGrid = () => {
+    updateBackground("#eeeeee")
     gridRef.current.handleClearGrid()
   }
 
@@ -50,9 +51,9 @@ function App({ size }) {
               <aside>
                 {/* <p className="menu-label">File</p> */}
                 <menu id="toolbar">
-                    <li><a className="menu-new" onClick={handleClearGrid}>New Grid</a></li>
-                    <li><SaveGrid classes="menu-save" gridSettings={colours} /></li>
-                    <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} /></li>
+                    <li><a className="menu-new" onClick={handleNewGrid}>New Grid</a></li>
+                    <li><SaveGrid classes="menu-save" gridSettings={colours} appSettings={{bg_col: background_colour}}/></li>
+                    <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} loadBgColour={updateBackground} /></li>
                     <li><ExportPalette classes="menu-export" colourList={colours} /></li>
                     <li><ChangeBackground classes="menu-changeBg" updater={updateBackground} /></li>
                     <li><Popup name="About" props={data.about} /></li>
