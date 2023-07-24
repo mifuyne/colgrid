@@ -1,7 +1,7 @@
 import {useState, useRef} from 'react'
 import Grid from './components/Grid'
 import ChangeBackground from './components/ChangeBackground'
-import {SaveGrid, LoadGrid, ExportPalette} from './components/fileHandling'
+import {NewGrid, SaveGrid, LoadGrid, ExportPalette} from './components/fileHandling'
 import Popup from './components/Popup'
 import data from './components/App/data.json'
 
@@ -29,11 +29,6 @@ function App({ size }) {
   // Reference to Grid component.
   const gridRef = useRef()
 
-  const handleNewGrid = () => {
-    updateBackground("#eeeeee")
-    gridRef.current.handleClearGrid()
-  }
-
   return (
     <>
       <div className="work-area" style={{backgroundColor: background_colour}}>
@@ -51,7 +46,7 @@ function App({ size }) {
               <aside>
                 {/* <p className="menu-label">File</p> */}
                 <menu id="toolbar">
-                    <li><a className="menu-new" onClick={handleNewGrid}>New Grid</a></li>
+                    <li><NewGrid reference={gridRef} updateBackground={updateBackground} /></li>
                     <li><SaveGrid classes="menu-save" gridSettings={colours} appSettings={{bg_col: background_colour}}/></li>
                     <li><LoadGrid classes="menu-load" loadColours={setColours} loadFilled={updateFilledCells} loadBgColour={updateBackground} /></li>
                     <li><ExportPalette classes="menu-export" colourList={colours} /></li>
